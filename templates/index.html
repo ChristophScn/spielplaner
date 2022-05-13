@@ -1,0 +1,101 @@
+<html>
+
+<head>
+  <title>Spielplan</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+
+<body>
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Uhrzeit</th>
+        <th>Runde</th>
+        <th>Team 1</th>
+        <th colspan="2">Ergebnis</th>
+        <th>Team 2</th>
+        <th>Schiedsrichter</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for match in matches %}
+      <tr>
+        <td>{{ match.time }}</td>
+        <td>{{ match.round }}</td>
+        <td>{{ match.home }}</td>
+        {% if match.goals == None %}
+        <td></td>
+        <td></td>
+        {% else %}
+        <td>{{ match.goals }}</td>
+        <td>{{ match.goals_against }}</td>
+        {% endif %}
+        <td>{{ match.guest }}</td>
+        <td>{{ match.referee }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Platz</th>
+        <th>Team</th>
+        <th>Spiele</th>
+        <th>Gewonnen</th>
+        <th>Unentschieden</th>
+        <th>Verloren</th>
+        <th>Tore</th>
+        <th>Gegentore</th>
+        <th>Tordifferenz</th>
+        <th>Punkte</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for team in teams %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ team.name }}</td>
+        <td>{{ team.games }}</td>
+        <td>{{ team.wins }}</td>
+        <td>{{ team.draws }}</td>
+        <td>{{ team.loses }}</td>
+        <td>{{ team.goals }}</td>
+        <td>{{ team.goals_against }}</td>
+        <td>{{ team.goal_difference }}</td>
+        <td>{{ team.points }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <table id="data" class="table table-striped">
+    <thead>
+      <tr>
+        <th>Uhrzeit</th>
+        <th>Runde</th>
+        <th>Team 1</th>
+        <th colspan="2">Ergebnis</th>
+        <th>Team 2</th>
+        <th>Schiedsrichter</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for match in predictions %}
+      <tr>
+        <td>{{ match.time }}</td>
+        <td>{{ match.round }}</td>
+        <td>{{ match.home }}</td>
+        <td></td>
+        <td></td>
+        <td>{{ match.guest }}</td>
+        <td>{{ match.referee }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+</body>
+
+</html>

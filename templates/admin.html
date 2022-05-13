@@ -1,0 +1,49 @@
+<html>
+
+<head>
+  <title>Spielplan</title>
+</head>
+
+<body>
+
+  <!--
+    <label for="title">Spielplan</label>
+    <br>
+    <input type="text" name="title" placeholder="Message title" value="{{ request.form['title'] }}"></input>
+    <br>
+  -->
+  <form method="post">
+
+    <table id="data" class="table table-striped">
+      <thead>
+        <tr>
+          <th>Uhrzeit</th>
+          <th>Runde</th>
+          <th>Team 1</th>
+          <th colspan="2">Ergebnis</th>
+          <th>Team 2</th>
+          <th>Schiedsrichter</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for match in matches %}
+        <tr>
+          <label for="{{ match }}"></label>
+          <td> <input type="text" name="{{ (match.id, 'time') }}" placeholder="{{ match.time }}"></input></td>
+          <td> <input type="text" name="{{ (match.id, 'round') }}" placeholder="{{ match.round }}"></input></td>
+          <td> <input type="text" name="{{ (match.id, 'home') }}" placeholder="{{ match.home }}"></input></td>
+          <td> <input type="text" name="{{ (match.id, 'goals') }}" placeholder="{{ match.goals }}"></input></td>
+          <td> <input type="text" name="{{ (match.id, 'goals_against') }}"
+              placeholder="{{ match.goals_against }}"></input></td>
+          <td> <input type="text" name="{{ (match.id, 'guest') }}" placeholder="{{ match.guest }}"></input></td>
+          <td> <input type="text" name="{{ (match.id, 'referee') }}" placeholder="{{ match.referee }}"></input></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <button type="submit">Submit</button>
+  </form>
+</body>
+
+</html>
