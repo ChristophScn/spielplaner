@@ -1,4 +1,3 @@
-from msilib import Table
 import pickle
 import uuid
 import random
