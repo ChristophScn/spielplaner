@@ -31,7 +31,7 @@
         <tr>
           <label for="{{ match }}"></label>
           <td> <input type="text" name="{{ (match.id, 'time') }}"
-              placeholder="{{ match.time.strftime('%H:%M') }}"></input></td>
+              placeholder="{{ match.time.strftime('%d %H:%M') }}"></input></td>
           <td> <input type="text" name="{{ (match.id, 'round') }}" placeholder="{{ match.round }}"></input></td>
           <td> <input type="text" name="{{ (match.id, 'home') }}" placeholder="{{ match.home }}"></input></td>
           <td> <input type="text" name="{{ (match.id, 'goals') }}" placeholder="{{ match.goals }}"></input></td>
@@ -53,13 +53,13 @@
         <td></td>
         <td></td>
         <td></td>
-        <td><button type="button" style="background-color: green;"
+        <td><button type="button"
             onclick="var xhr = new XMLHttpRequest(); xhr.open('post', 'admin/match', false); xhr.send(null);location.reload();">
             Neues Spiel</button></td>
       </tbody>
     </table>
 
-    <button type="submit">Submit</button>
+    <button type="submit">Speichern</button>
   </form>
 </body>
 

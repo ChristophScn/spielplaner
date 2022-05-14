@@ -1,5 +1,5 @@
+from msilib import Table
 import pickle
-
 import uuid
 import random
 
@@ -19,7 +19,17 @@ class Match(object):
 
     def set_attribute(self, name, value):
         if name == "time":
-            self.time = datetime.datetime.strptime(value, "%H:%M")
+            try:
+                self.time = datetime.datetime.strptime(value, "%d %H:%M")
+            except ValueError as e:
+                new_time = datetime.datetime.strptime(value, "%H:%M")
+                self.time = datetime.datetime(
+                    self.time.year,
+                    self.time.month,
+                    self.time.day,
+                    new_time.hour,
+                    new_time.minute,
+                )
         elif name == "home":
             self.home = str(value)
         elif name == "guest":
@@ -127,14 +137,19 @@ class Schedule(object):
         start_time=datetime.datetime(1900, 1, 1, 8, 30),
         match_time=datetime.timedelta(minutes=25),
         pause_time=datetime.timedelta(minutes=5),
+        end_time=datetime.datetime(1900, 1, 1, 19, 00),
+        rounds=5,
     ) -> None:
         self.teams = teams
 
         self.start_time = start_time
         self.match_time = match_time
         self.pause_time = pause_time
+        self.end_time = end_time
+        self.rounds = rounds
 
         self.generate_first_round()
+        self.save()
 
     def generate_first_round(self):
         random.seed(0)
@@ -177,6 +192,22 @@ class Schedule(object):
     def get_current_round(self) -> datetime.datetime:
         return max(self.matches, key=lambda match: match.round).round
 
+    def wrap_time(self, time):
+        if (
+            time.hour > self.end_time.hour
+            or time.minute > self.end_time.minute
+            and time.hour == self.end_time.hour
+        ):
+            return datetime.datetime(
+                time.year,
+                time.month,
+                time.day + 1,
+                self.start_time.hour,
+                self.start_time.minute,
+            )
+        else:
+            return time
+
     def predict_matches(self, add_referees=True) -> list[Match]:
         if not self.matches:
             self.generate_first_round()
@@ -200,28 +231,46 @@ class Schedule(object):
         time = self.get_last_match_time() + self.match_time + self.pause_time
         round = self.get_current_round() + 1
 
-        while table:
-            home = table.pop(0)
-            for team in table:
-                if not self.match_exists(home, team):
-                    break
-            else:  # Did not break
-                team = table[0]
+        if round <= self.rounds:
+            while table:
+                home = table.pop(0)
+                for team in table:
+                    if not self.match_exists(home, team):
+                        break
+                else:  # Did not break
+                    team = table[0]
 
-            new_matches.append(
-                Match(
-                    time,
-                    home.name,
-                    team.name,
-                    None,
-                    None,
-                    None,
-                    round,
+                time = self.wrap_time(time)
+
+                new_matches.append(
+                    Match(
+                        time,
+                        home.name,
+                        team.name,
+                        None,
+                        None,
+                        None,
+                        round,
+                    )
                 )
-            )
 
-            time += datetime.timedelta(minutes=25)
-            table.remove(team)
+                time += datetime.timedelta(minutes=25)
+                table.remove(team)
+        elif round == self.rounds + 1:
+            for i in range(1, len(table) + 1, 2):
+                time = self.wrap_time(time)
+                new_matches.append(
+                    Match(
+                        time,
+                        table[-i - 1].name,
+                        table[-i].name,
+                        None,
+                        None,
+                        None,
+                        round,
+                    )
+                )
+                time += datetime.timedelta(minutes=25)
 
         if add_referees:
             for match in new_matches:
@@ -241,7 +290,8 @@ class Schedule(object):
             team = Team(name)
             table.append(team)
             for match in matches:
-                team.add_match(match)
+                if match.round <= self.rounds:
+                    team.add_match(match)
 
         table.sort(
             key=lambda team: (team.points, team.goal_difference, team.goals, team.name),

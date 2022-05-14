@@ -19,6 +19,7 @@
   <table id="data" class="table fl-table">
     <thead>
       <tr>
+        <th>Tag</th>
         <th>Uhrzeit</th>
         <th>Runde</th>
         <th>Team 1</th>
@@ -30,6 +31,7 @@
     <tbody>
       {% for match in matches %}
       <tr>
+        <td>{{ match.time.strftime('%d') }}</td>
         <td>{{ match.time.strftime('%H:%M') }}</td>
         <td>{{ match.round }}</td>
         <td>{{ match.home }}</td>
@@ -85,6 +87,7 @@
   <table id="data" class="table fl-table">
     <thead>
       <tr>
+        <th>Tag</th>
         <th>Uhrzeit</th>
         <th>Runde</th>
         <th>Team 1</th>
@@ -96,6 +99,7 @@
     <tbody>
       {% for match in predictions %}
       <tr>
+        <td>{{ match.time.strftime('%d') }}</td>
         <td>{{ match.time.strftime('%H:%M') }}</td>
         <td>{{ match.round }}</td>
         <td>{{ match.home }}</td>
