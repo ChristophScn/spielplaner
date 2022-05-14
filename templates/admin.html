@@ -29,7 +29,8 @@
         {% for match in matches %}
         <tr>
           <label for="{{ match }}"></label>
-          <td> <input type="text" name="{{ (match.id, 'time') }}" placeholder="{{ match.time }}"></input></td>
+          <td> <input type="text" name="{{ (match.id, 'time') }}"
+              placeholder="{{ match.time.strftime('%H:%M') }}"></input></td>
           <td> <input type="text" name="{{ (match.id, 'round') }}" placeholder="{{ match.round }}"></input></td>
           <td> <input type="text" name="{{ (match.id, 'home') }}" placeholder="{{ match.home }}"></input></td>
           <td> <input type="text" name="{{ (match.id, 'goals') }}" placeholder="{{ match.goals }}"></input></td>

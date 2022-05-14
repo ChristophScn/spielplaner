@@ -30,7 +30,7 @@
     <tbody>
       {% for match in matches %}
       <tr>
-        <td>{{ match.time }}</td>
+        <td>{{ match.time.strftime('%H:%M') }}</td>
         <td>{{ match.round }}</td>
         <td>{{ match.home }}</td>
         {% if match.goals == None %}
@@ -96,7 +96,7 @@
     <tbody>
       {% for match in predictions %}
       <tr>
-        <td>{{ match.time }}</td>
+        <td>{{ match.time.strftime('%H:%M') }}</td>
         <td>{{ match.round }}</td>
         <td>{{ match.home }}</td>
         <td></td>

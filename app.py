@@ -7,7 +7,7 @@ import random
 from ast import literal_eval as make_tuple
 import uuid
 
-from torch import rand
+import datetime
 
 app = Flask(__name__)
 
@@ -52,7 +52,7 @@ class Match(object):
 
     def set_attribute(self, name, value):
         if name == "time":
-            self.time = int(value)
+            self.time = datetime.datetime.strptime(value, "%H:%M")
         if name == "round":
             self.round = int(value)
         elif name == "home":
@@ -142,7 +142,7 @@ def generate_first_round():
 
     random.seed(0)
     matches = []
-    time = 0
+    time = datetime.datetime(1900, 1, 1, 8, 30)
     teams = TEAMS[:]
     random.shuffle(teams)
 
@@ -152,9 +152,11 @@ def generate_first_round():
     random.shuffle(matches)
 
     for match in matches:
-        match.add_referee(matches)
         match.time = time
-        time += 25
+        time += datetime.timedelta(minutes=25)
+
+    for match in matches:
+        match.add_referee(matches)
 
     return matches
 
@@ -166,7 +168,7 @@ def predict_matches(matches, add_referees=True):
     new_matches = []
     table = calculate_table(matches)
 
-    time = matches[-1].time + 5
+    time = matches[-1].time + datetime.timedelta(minutes=30)
     round = matches[-1].round + 1
 
     while table:
@@ -188,7 +190,7 @@ def predict_matches(matches, add_referees=True):
                 round,
             )
         )
-        time += 25
+        time += datetime.timedelta(minutes=25)
         table.remove(team)
     if add_referees:
         for match in new_matches:
