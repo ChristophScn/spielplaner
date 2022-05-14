@@ -23,6 +23,7 @@
           <th colspan="2">Ergebnis</th>
           <th>Team 2</th>
           <th>Schiedsrichter</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
@@ -38,8 +39,23 @@
               placeholder="{{ match.goals_against }}"></input></td>
           <td> <input type="text" name="{{ (match.id, 'guest') }}" placeholder="{{ match.guest }}"></input></td>
           <td> <input type="text" name="{{ (match.id, 'referee') }}" placeholder="{{ match.referee }}"></input></td>
+          <td>
+            <button style="background-color: red;" type="button"
+              onclick="var result = confirm('Spiel sicher löschen?');if (result) {var xhr = new XMLHttpRequest(); xhr.open('delete', 'admin/match/{{ match.id }}', false); xhr.send(null);location.reload();}">
+              Löschen</button>
+          </td>
         </tr>
         {% endfor %}
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><button type="button" style="background-color: green;"
+            onclick="var xhr = new XMLHttpRequest(); xhr.open('post', 'admin/match', false); xhr.send(null);location.reload();">
+            Neues Spiel</button></td>
       </tbody>
     </table>
 
