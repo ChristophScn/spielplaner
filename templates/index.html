@@ -29,7 +29,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for match in matches %}
+      {% for match in schedule.matches %}
       <tr>
         <td>{{ match.time.strftime('%d') }}</td>
         <td>{{ match.time.strftime('%H:%M') }}</td>
@@ -66,7 +66,7 @@
       </tr>
     </thead>
     <tbody>
-      {% for team in teams %}
+      {% for team in schedule.calculate_table() %}
       <tr>
         <td>{{ loop.index }}</td>
         <td>{{ team.name }}</td>
@@ -97,11 +97,11 @@
       </tr>
     </thead>
     <tbody>
-      {% for match in predictions %}
+      {% for match in schedule.predict_matches() %}
       <tr>
         <td>{{ match.time.strftime('%d') }}</td>
         <td>{{ match.time.strftime('%H:%M') }}</td>
-        <td>{{ match.round }}</td>
+        <td>{% if match.round < schedule.rounds %} {{ match.round }} {% else %} Finale {% endif %}</td>
         <td>{{ match.home }}</td>
         <td></td>
         <td></td>
@@ -111,7 +111,9 @@
       {% endfor %}
     </tbody>
   </table>
-
+  
+  <label>Turnierverlauf</label>
+  <img class="plot" src="/plot.png">
 </body>
 
 </html>

@@ -27,7 +27,13 @@ label {
     margin-right: auto;
 }
 
-
+.plot {
+    width: 100%;
+    height: auto;
+    margin-top: -5.5em;
+    position: absolute;
+    z-index: -2;
+}
 
 /*********/
 

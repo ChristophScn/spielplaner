@@ -1,7 +1,7 @@
 import pickle
+import sched
 import uuid
 import random
-
 import datetime
 
 
@@ -148,7 +148,6 @@ class Schedule(object):
         self.rounds = rounds
 
         self.generate_first_round()
-        self.save()
 
     def generate_first_round(self):
         random.seed(0)
@@ -170,6 +169,8 @@ class Schedule(object):
 
         for match in self.matches:
             match.add_referee(self)
+
+        self.save()
 
     def get_match(self, id: str) -> Match:
         for match in self.matches:
@@ -256,13 +257,13 @@ class Schedule(object):
                 time += datetime.timedelta(minutes=25)
                 table.remove(team)
         elif round == self.rounds + 1:
-            for i in range(1, len(table) + 1, 2):
+            for i in [k for k in range(4, len(table) - 1, 2)] + [3, 1]:
                 time = self.wrap_time(time)
                 new_matches.append(
                     Match(
                         time,
-                        table[-i - 1].name,
-                        table[-i].name,
+                        table[i].name,
+                        table[i + 1].name,
                         None,
                         None,
                         None,
@@ -277,7 +278,9 @@ class Schedule(object):
 
         return new_matches
 
-    def calculate_table(self, additional_matches=[]):
+    def calculate_table(self, additional_matches=[], up_to_round=None):
+        up_to_round = self.rounds if up_to_round is None else up_to_round
+
         teams = set()
         matches = self.matches + additional_matches
 
@@ -289,7 +292,7 @@ class Schedule(object):
             team = Team(name)
             table.append(team)
             for match in matches:
-                if match.round <= self.rounds:
+                if match.round <= up_to_round:
                     team.add_match(match)
 
         table.sort(
@@ -302,6 +305,11 @@ class Schedule(object):
     def all_matches_played(self):
         return all(match.is_played() for match in self.matches)
 
+    def get_graph_data(self):
+        for team in self.teams:
+            data = [(game_nr, 0) for game_nr in range(self.get_current_round())]
+        return data
+
     @classmethod
     def load(cls) -> "Schedule":
         try:
@@ -311,6 +319,9 @@ class Schedule(object):
 
     def save(self) -> None:
         self.matches.sort(key=lambda match: match.time)
+
+        if not self.matches:
+            self.generate_first_round()
 
         if self.all_matches_played():
             self.matches += self.predict_matches()

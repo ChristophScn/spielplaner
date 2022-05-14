@@ -27,7 +27,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for match in matches %}
+        {% for match in schedule.matches %}
         <tr>
           <label for="{{ match }}"></label>
           <td> <input type="text" name="{{ (match.id, 'time') }}"
