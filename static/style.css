@@ -1,3 +1,87 @@
-table, th, td {
-    border: 1px solid black;
+.background {
+    max-width: 1%;
+    height: auto;
+}
+
+:root {
+    --highligh-color: #ff9a00;
+    --table-color-2: #ff9a00;
+    --table-color-1: #e68a00;
+    --text-color: #FFFFFF;
+    --bg-color: #454545;
+    --row-color-1: #d3d3d3;
+    --row-color-2: #929292;
+
+}
+
+label {
+    display: block;
+    margin-top: 2em;
+    margin-bottom: 0.5em;
+    font-size: xx-large;
+    color: var(--text-color);
+    font-weight: bold;
+
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+
+/*********/
+
+* {
+    box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+}
+
+body {
+    font-family: Helvetica;
+    -webkit-font-smoothing: antialiased;
+    background: var(--bg-color);
+}
+
+/* Table Styles */
+
+.fl-table {
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: normal;
+    border: none;
+    border-collapse: collapse;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    white-space: nowrap;
+    background-color: var(--row-color-2);
+}
+
+.fl-table td,
+.fl-table th {
+    text-align: center;
+    padding: 8px;
+}
+
+.fl-table td {
+    border-right: 1px solid #f8f8f8;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.fl-table thead th {
+    color: #ffffff;
+    background: var(--table-color-2);
+}
+
+
+.fl-table thead th:nth-child(odd) {
+    color: #ffffff;
+    background: var(--table-color-1);
+}
+
+.fl-table tr:nth-child(even) {
+    background: var(--row-color-1);
 }

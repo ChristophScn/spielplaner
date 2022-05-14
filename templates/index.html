@@ -3,10 +3,20 @@
 <head>
   <title>Spielplan</title>
   <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}" />
+  <script>
+    window.setInterval(() => {
+      location.reload();
+    }, 30000);
+  </script>
 </head>
 
 <body>
-  <table id="data" class="table table-striped">
+  <!--
+  <img class="logo" src="{{ url_for('static', filename='bg.jpeg') }}">
+  -->
+  <label>Spielplan</label>
+
+  <table id="data" class="table fl-table">
     <thead>
       <tr>
         <th>Uhrzeit</th>
@@ -37,18 +47,19 @@
     </tbody>
   </table>
 
-  <table id="data" class="table table-striped">
+  <label>Tabelle</label>
+  <table id="data" class="table fl-table">
     <thead>
       <tr>
         <th>Platz</th>
         <th>Team</th>
         <th>Spiele</th>
-        <th>Gewonnen</th>
-        <th>Unentschieden</th>
-        <th>Verloren</th>
-        <th>Tore</th>
-        <th>Gegentore</th>
-        <th>Tordifferenz</th>
+        <th>Siege</th>
+        <th>Unents.</th>
+        <th>Niederl.</th>
+        <th>Tore+</th>
+        <th>Tore-</th>
+        <th>Tordiff</th>
         <th>Punkte</th>
       </tr>
     </thead>
@@ -70,7 +81,8 @@
     </tbody>
   </table>
 
-  <table id="data" class="table table-striped">
+  <label>Spielplan-Prognose</label>
+  <table id="data" class="table fl-table">
     <thead>
       <tr>
         <th>Uhrzeit</th>
