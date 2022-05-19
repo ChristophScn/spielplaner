@@ -12,6 +12,13 @@
 
 <body>
 
+  {% if schedule.announcement != "" %}
+  <label>Ankündigungen</label>
+  <div class="announcement">
+    {{ schedule.announcement }}
+  </div>
+  {% endif %}
+
   {% if schedule.calculate_final_table() %}
   <label>Endergebnis</label>
   <table id="data" class="table fl-table">

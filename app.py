@@ -27,10 +27,7 @@ def verify_password(username: str, password: str) -> bool:
 
 @app.route("/")
 def index() -> str:
-    return render_template(
-        "index.html",
-        schedule=Schedule.load()
-    )
+    return render_template("index.html", schedule=Schedule.load())
 
 
 @app.route("/admin", methods=("GET",))
@@ -49,6 +46,9 @@ def admin_post() -> str:
             match_id, attribute_name = make_tuple(key)
             if value == "":
                 continue
+
+            if match_id is None and attribute_name == "announcement":
+                schedule.announcement = value if value != "None" else ""
 
             match = schedule.get_match(match_id)
             match.set_attribute(attribute_name, value)
@@ -83,22 +83,24 @@ def admin_match_add() -> str:
     return "Created match"
 
 
-@app.route('/plot.png')
+@app.route("/plot.png")
 def plot_png():
     fig = create_figure()
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
-    return Response(output.getvalue(), mimetype='image/png')
+    return Response(output.getvalue(), mimetype="image/png")
 
 
-@app.route('/export')
+@app.route("/export")
 def export_json():
-    return Response(Schedule.load().toJson(), mimetype='text/json')
+    return Response(Schedule.load().toJson(), mimetype="text/json")
+
 
 @app.route("/import", methods=("GET",))
 @auth.login_required
 def import_json():
     return render_template("import.html", schedule=Schedule.load())
+
 
 @app.route("/import", methods=("POST",))
 @auth.login_required
@@ -114,11 +116,22 @@ def import_post() -> str:
 def create_figure():
     schedule = Schedule.load()
     place_by_round = defaultdict(list)
-    for round in range(1, schedule.get_current_round() + 1):
+    max_round = min(schedule.get_current_round(), schedule.rounds)
+    for round in range(1, max_round + 1):
         table = schedule.calculate_table(up_to_round=round)
         for place, team in enumerate(table):
             place_by_round[team.name].append(place + 1)
-    fig = Figure((12, 7),facecolor="#454545")
+
+    if schedule.get_current_round() == schedule.rounds + 1:
+        max_round += 1
+
+        for team in place_by_round:
+            place_by_round[team].append(place_by_round[team][-1])
+
+        for place, team in schedule.calculate_final_table():
+            place_by_round[team][-1] = place
+
+    fig = Figure((12, 7), facecolor="#454545")
     axis = fig.add_subplot(1, 1, 1)
     axis.set_facecolor("#454545")
     axis.set_ylabel("Platzieung")
@@ -126,23 +139,28 @@ def create_figure():
     axis.invert_yaxis()
     axis.set_yticks(range(1, len(place_by_round) + 1))
     axis.set_xticks(range(1, place + 1))
-    axis.grid(True, axis='y')
+    axis.grid(True, axis="y")
 
-    xs = range(1, schedule.get_current_round() + 1)
+    xs = range(1, max_round + 1)
     for i, team in enumerate(sorted(place_by_round)):
         ys = place_by_round[team]
-        color = matplotlib.colors.hsv_to_rgb((i/(len(place_by_round) + 1), 1, 0.7 + 0.3 * (i % 2)))
+        color = matplotlib.colors.hsv_to_rgb(
+            (i / (len(place_by_round) + 1), 1, 0.7 + 0.3 * (i % 2))
+        )
         axis.plot(xs, ys, linewidth=4, color=color, label=team)
-    
+
     # Shrink current axis by 20%
     box = axis.get_position()
-    axis.set_position([box.x0, box.y0 + box.height * 0.1,
-                 box.width, box.height * 0.9])
+    axis.set_position([box.x0, box.y0 + box.height * 0.1, box.width, box.height * 0.9])
 
-    frame = axis.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05),
-          fancybox=True, shadow=True, ncol=5).get_frame()
+    frame = axis.legend(
+        loc="upper center",
+        bbox_to_anchor=(0.5, -0.05),
+        fancybox=True,
+        shadow=True,
+        ncol=5,
+    ).get_frame()
 
     frame.set_facecolor("#929292")
     frame.set_edgecolor("#000000")
     return fig
-        

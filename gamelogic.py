@@ -6,7 +6,18 @@ import datetime
 
 
 class Match(object):
-    def __init__(self, time, home, guest, goals, goals_against, referee, round, id=None, placement=None) -> None:
+    def __init__(
+        self,
+        time,
+        home,
+        guest,
+        goals,
+        goals_against,
+        referee,
+        round,
+        id=None,
+        placement=None,
+    ) -> None:
         self.time = time
         self.home = home
         self.guest = guest
@@ -139,6 +150,7 @@ class Schedule(object):
         pause_time=datetime.timedelta(minutes=5),
         end_time=datetime.datetime(1900, 1, 1, 19, 00),
         rounds=5,
+        announcement="",
     ) -> None:
 
         self.teams = teams
@@ -147,6 +159,7 @@ class Schedule(object):
         self.pause_time = pause_time
         self.end_time = end_time
         self.rounds = rounds
+        self.announcement = announcement
 
         self.generate_first_round()
 
@@ -210,7 +223,9 @@ class Schedule(object):
             return time
 
     def more_rounds(self):
-        return self.get_current_round() < self.rounds + 1 # Rounds and one placement round
+        return (
+            self.get_current_round() < self.rounds + 1
+        )  # Rounds and one placement round
 
     def predict_matches(self, add_referees=True) -> list[Match]:
         if not self.matches:
@@ -272,7 +287,7 @@ class Schedule(object):
                         None,
                         None,
                         round,
-                        placement= i + 1
+                        placement=i + 1,
                     )
                 )
                 time += datetime.timedelta(minutes=25)
@@ -311,8 +326,22 @@ class Schedule(object):
         table = []
         for match in self.matches:
             if match.placement is not None and match.is_played():
-                table.append((match.placement if match.goals >= match.goals_against else match.placement + 1, match.home))
-                table.append((match.placement if match.goals_against >= match.goals else match.placement + 1, match.guest))
+                table.append(
+                    (
+                        match.placement
+                        if match.goals >= match.goals_against
+                        else match.placement + 1,
+                        match.home,
+                    )
+                )
+                table.append(
+                    (
+                        match.placement
+                        if match.goals_against >= match.goals
+                        else match.placement + 1,
+                        match.guest,
+                    )
+                )
         table.sort()
 
         return table
@@ -357,23 +386,37 @@ class Schedule(object):
         )
 
     def toJson(self):
-        return json.dumps(self, default=lambda o: o.__dict__ if type(o) not in (datetime.datetime, datetime.timedelta) else str(o), 
-            sort_keys=True, indent=4)
+        return json.dumps(
+            self,
+            default=lambda o: o.__dict__
+            if type(o) not in (datetime.datetime, datetime.timedelta)
+            else str(o),
+            sort_keys=True,
+            indent=4,
+        )
 
     @classmethod
-    def fromJson(cls, json_str : str) -> "Schedule":
+    def fromJson(cls, json_str: str) -> "Schedule":
         json_obj = json.loads(json_str)
 
         if "start_time" in json_obj:
-            json_obj["start_time"] = datetime.datetime.strptime(json_obj["start_time"], "%Y-%m-%d  %H:%M:%S")
+            json_obj["start_time"] = datetime.datetime.strptime(
+                json_obj["start_time"], "%Y-%m-%d  %H:%M:%S"
+            )
         if "match_time" in json_obj:
             t = datetime.datetime.strptime(json_obj["match_time"], "%H:%M:%S")
-            json_obj["match_time"] = datetime.timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+            json_obj["match_time"] = datetime.timedelta(
+                hours=t.hour, minutes=t.minute, seconds=t.second
+            )
         if "pause_time" in json_obj:
             t = datetime.datetime.strptime(json_obj["pause_time"], "%H:%M:%S")
-            json_obj["pause_time"] = datetime.timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+            json_obj["pause_time"] = datetime.timedelta(
+                hours=t.hour, minutes=t.minute, seconds=t.second
+            )
         if "end_time" in json_obj:
-            json_obj["end_time"] = datetime.datetime.strptime(json_obj["end_time"], "%Y-%m-%d  %H:%M:%S")
+            json_obj["end_time"] = datetime.datetime.strptime(
+                json_obj["end_time"], "%Y-%m-%d  %H:%M:%S"
+            )
         if "rounds" in json_obj:
             json_obj["rounds"] = json_obj["rounds"]
         if "matches" in json_obj:
@@ -388,13 +431,12 @@ class Schedule(object):
             matches_list = []
             for match in matches:
                 if "time" in match:
-                    match["time"] = datetime.datetime.strptime(match["time"], "%Y-%m-%d  %H:%M:%S")
+                    match["time"] = datetime.datetime.strptime(
+                        match["time"], "%Y-%m-%d  %H:%M:%S"
+                    )
 
                 matches_list.append(Match(**match))
-        
+
             schedule.matches = matches_list
-        
+
         return schedule
-
-        
-
