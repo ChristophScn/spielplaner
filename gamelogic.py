@@ -209,6 +209,9 @@ class Schedule(object):
         else:
             return time
 
+    def more_rounds(self):
+        return self.get_current_round() < self.rounds + 1 # Rounds and one placement round
+
     def predict_matches(self, add_referees=True) -> list[Match]:
         if not self.matches:
             self.generate_first_round()
@@ -258,7 +261,7 @@ class Schedule(object):
                 time += datetime.timedelta(minutes=25)
                 table.remove(team)
         elif round == self.rounds + 1:
-            for i in [k for k in range(4, len(table) - 1, 2)] + [3, 1]:
+            for i in [k for k in range(4, len(table) - 1, 2)] + [2, 0]:
                 time = self.wrap_time(time)
                 new_matches.append(
                     Match(
@@ -269,6 +272,7 @@ class Schedule(object):
                         None,
                         None,
                         round,
+                        placement= i + 1
                     )
                 )
                 time += datetime.timedelta(minutes=25)
@@ -300,6 +304,16 @@ class Schedule(object):
             key=lambda team: (team.points, team.goal_difference, team.goals, team.name),
             reverse=True,
         )
+
+        return table
+
+    def calculate_final_table(self):
+        table = []
+        for match in self.matches:
+            if match.placement is not None and match.is_played():
+                table.append((match.placement if match.goals >= match.goals_against else match.placement + 1, match.home))
+                table.append((match.placement if match.goals_against >= match.goals else match.placement + 1, match.guest))
+        table.sort()
 
         return table
 

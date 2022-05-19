@@ -11,6 +11,28 @@
 </head>
 
 <body>
+
+  {% if schedule.calculate_final_table() %}
+  <label>Endergebnis</label>
+  <table id="data" class="table fl-table">
+    <thead>
+      <tr>
+        <th>Platz</th>
+        <th>Team</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for placement, team in schedule.calculate_final_table() %}
+      <tr>
+        <td>{{ placement }}</td>
+        <td>{{ team }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+
+
   <!--
   <img class="logo" src="{{ url_for('static', filename='bg.jpeg') }}">
   -->
@@ -33,7 +55,7 @@
       <tr>
         <td>{{ match.time.strftime('%d') }}</td>
         <td>{{ match.time.strftime('%H:%M') }}</td>
-        <td>{{ match.round }}</td>
+        <td>{% if match.placement == None %} {{ match.round }} {% else %} Spiel um Platz {{ match.placement }} {% endif %}</td>
         <td>{{ match.home }}</td>
         {% if match.goals == None %}
         <td></td>
@@ -83,6 +105,7 @@
     </tbody>
   </table>
 
+  {% if schedule.more_rounds() %}
   <label>Spielplan-Prognose</label>
   <table id="data" class="table fl-table">
     <thead>
@@ -101,7 +124,7 @@
       <tr>
         <td>{{ match.time.strftime('%d') }}</td>
         <td>{{ match.time.strftime('%H:%M') }}</td>
-        <td>{% if match.round < schedule.rounds %} {{ match.round }} {% else %} Finale {% endif %}</td>
+        <td>{% if match.placement == None %} {{ match.round }} {% else %} Spiel um Platz {{ match.placement }} {% endif %}</td>
         <td>{{ match.home }}</td>
         <td></td>
         <td></td>
@@ -111,6 +134,7 @@
       {% endfor %}
     </tbody>
   </table>
+  {% endif %}
   
   <label>Turnierverlauf</label>
   <img class="plot" src="/plot.png">
