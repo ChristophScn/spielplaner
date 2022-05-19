@@ -275,7 +275,16 @@ class Schedule(object):
 
                 time += datetime.timedelta(minutes=25)
                 table.remove(team)
+
         elif round == self.rounds + 1:
+            referee_final_lookup = {
+                5: 1,
+                7: 3,
+                9: 4,
+                11: 2,
+                3: 6,
+                1: 5,
+            }
             for i in [k for k in range(4, len(table) - 1, 2)] + [2, 0]:
                 time = self.wrap_time(time)
                 new_matches.append(
@@ -285,7 +294,9 @@ class Schedule(object):
                         table[i + 1].name,
                         None,
                         None,
-                        None,
+                        table[referee_final_lookup[i + 1] - 1].name
+                        if i + 1 in referee_final_lookup
+                        else None,
                         round,
                         placement=i + 1,
                     )
