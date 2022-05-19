@@ -1,0 +1,15 @@
+<html>
+
+<head>
+  <title>Spielplan importieren</title>
+</head>
+
+<body>
+  <form method="post">
+    <textarea name="json" style="width:100%;height:90%;">{{ schedule.toJson() }}</textarea>
+
+    <button type="submit">Speichern</button>
+  </form>
+</body>
+
+</html>

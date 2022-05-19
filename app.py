@@ -1,4 +1,3 @@
-from collections import defaultdict
 from flask import Flask, redirect
 from flask import render_template
 from flask import request
@@ -9,6 +8,8 @@ from matplotlib.figure import Figure
 import io
 
 from ast import literal_eval as make_tuple
+
+from collections import defaultdict
 
 import matplotlib
 
@@ -88,6 +89,27 @@ def plot_png():
     output = io.BytesIO()
     FigureCanvas(fig).print_png(output)
     return Response(output.getvalue(), mimetype='image/png')
+
+
+@app.route('/export')
+def export_json():
+    return Response(Schedule.load().toJson(), mimetype='text/json')
+
+@app.route("/import", methods=("GET",))
+@auth.login_required
+def import_json():
+    return render_template("import.html", schedule=Schedule.load())
+
+@app.route("/import", methods=("POST",))
+@auth.login_required
+def import_post() -> str:
+    try:
+        json_str = request.form["json"]
+        Schedule.fromJson(json_str).save()
+        return redirect("import", code=302)
+    except Exception as e:
+        return str(e)
+
 
 def create_figure():
     schedule = Schedule.load()

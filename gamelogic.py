@@ -1,3 +1,4 @@
+import json
 import pickle
 import uuid
 import random
@@ -5,7 +6,7 @@ import datetime
 
 
 class Match(object):
-    def __init__(self, time, home, guest, goals, goals_against, referee, round) -> None:
+    def __init__(self, time, home, guest, goals, goals_against, referee, round, id=None, placement=None) -> None:
         self.time = time
         self.home = home
         self.guest = guest
@@ -13,7 +14,8 @@ class Match(object):
         self.goals_against = goals_against
         self.referee = referee
         self.round = round
-        self.id = str(uuid.uuid4())
+        self.id = str(uuid.uuid4()) if not id else id
+        self.placement = placement
 
     def set_attribute(self, name, value):
         if name == "time":
@@ -68,7 +70,7 @@ class Match(object):
                 return
 
     def __repr__(self):
-        return f"Match({self.time},{self.home},{self.guest},{self.goals},{self.goals_against},{self.referee},{self.round},{self.id})"
+        return f"Match({self.time},{self.home},{self.guest},{self.goals},{self.goals_against},{self.referee},{self.round},{self.id},{self.placement})"
 
 
 class Team(object):
@@ -138,8 +140,8 @@ class Schedule(object):
         end_time=datetime.datetime(1900, 1, 1, 19, 00),
         rounds=5,
     ) -> None:
-        self.teams = teams
 
+        self.teams = teams
         self.start_time = start_time
         self.match_time = match_time
         self.pause_time = pause_time
@@ -339,3 +341,46 @@ class Schedule(object):
                 self.get_current_round(),
             )
         )
+
+    def toJson(self):
+        return json.dumps(self, default=lambda o: o.__dict__ if type(o) not in (datetime.datetime, datetime.timedelta) else str(o), 
+            sort_keys=True, indent=4)
+
+    @classmethod
+    def fromJson(cls, json_str : str) -> "Schedule":
+        json_obj = json.loads(json_str)
+
+        if "start_time" in json_obj:
+            json_obj["start_time"] = datetime.datetime.strptime(json_obj["start_time"], "%Y-%m-%d  %H:%M:%S")
+        if "match_time" in json_obj:
+            t = datetime.datetime.strptime(json_obj["match_time"], "%H:%M:%S")
+            json_obj["match_time"] = datetime.timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+        if "pause_time" in json_obj:
+            t = datetime.datetime.strptime(json_obj["pause_time"], "%H:%M:%S")
+            json_obj["pause_time"] = datetime.timedelta(hours=t.hour, minutes=t.minute, seconds=t.second)
+        if "end_time" in json_obj:
+            json_obj["end_time"] = datetime.datetime.strptime(json_obj["end_time"], "%Y-%m-%d  %H:%M:%S")
+        if "rounds" in json_obj:
+            json_obj["rounds"] = json_obj["rounds"]
+        if "matches" in json_obj:
+            matches = json_obj["matches"]
+            del json_obj["matches"]
+        else:
+            matches = None
+
+        schedule = Schedule(**json_obj)
+
+        if matches:
+            matches_list = []
+            for match in matches:
+                if "time" in match:
+                    match["time"] = datetime.datetime.strptime(match["time"], "%Y-%m-%d  %H:%M:%S")
+
+                matches_list.append(Match(**match))
+        
+            schedule.matches = matches_list
+        
+        return schedule
+
+        
+
