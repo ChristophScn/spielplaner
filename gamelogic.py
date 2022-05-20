@@ -126,18 +126,18 @@ class Team(object):
 
 
 TEAMS = [
-    "Hippos A",
-    "Hippos B",
-    "Hippos C",
     "CCC Barsinghausen",
-    "Oldenburg/Münster (D)",
-    "Limmer",
-    "RSV A",
-    "RSV B",
-    "Rostock",
-    "Buxburg",
     "Braunschweig",
     "Erlangen",
+    "Buxburg",
+    "Oldenburg/Münster (D)",
+    "Hippos B",
+    "RSV A",
+    "Rostock",
+    "RSV B",
+    "Hippos A",
+    "Hippos C",
+    "Limmer",
 ]
 
 
@@ -170,12 +170,13 @@ class Schedule(object):
         time = self.start_time
 
         teams = self.teams[:]
-        random.shuffle(teams)
+        # random.shuffle(teams)
 
         for i in range(0, len(teams) - 1, 2):
             self.matches.append(Match(0, teams[i], teams[i + 1], None, None, None, 1))
 
-        random.shuffle(self.matches)
+        # random.shuffle(self.matches)
+        print(self.matches)
 
         for match in self.matches:
             match.time = time

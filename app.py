@@ -22,7 +22,7 @@ auth = HTTPBasicAuth()
 
 @auth.verify_password
 def verify_password(username: str, password: str) -> bool:
-    return username == "admin" and password == "admin"
+    return username == "Hippos" and password == "HippoAdmins"
 
 
 @app.route("/")
