@@ -100,3 +100,12 @@ body {
     white-space: pre-wrap;
     text-align: center;
 }
+
+.explanation {
+    border-style: dashed;
+    border-color: var(--highligh-color);
+    color: var(--row-color-1);
+    font-size: 20px;
+    padding: 10px;
+    text-align: center;
+}
